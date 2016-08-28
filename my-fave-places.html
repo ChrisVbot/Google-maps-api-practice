@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple markers</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+    // var locations = [
+    //   ["Romer's Burger Bar",  49.268, -123.148],
+    //   ["Lighthouse Labs",     49.282, -123.108],
+    //   ["Kits Pool",           49.273, -123.158],
+    //   ["Alibi Room",          49.284, -123.102]
+    // ]
+      function initMap() {
+        var romers = {lat: 49.268, lng: -123.148};
+        var lighthouseLabs = {lat: 49.282, lng: -123.108};
+        var kitsPool = {lat: 49.273, lng: -123.158};
+        var alibiRoom = {lat: 49.284, lng: -123.102};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: romers
+        });
+
+        var romerString = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">Romer\'s Burger Bar</h1>'+
+            '<div id="bodyContent">'+
+            '<p>Always a great place for a burg and a beer!' +
+            '</p>'+
+            '</div>'+
+            '</div>';
+
+        var lighthouseString = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">Lighthouse Labs</h1>'+
+            '<div id="bodyContent">'+
+            '<p>I spend a lot of time here!' +
+            '</p>'+
+            '</div>'+
+            '</div>';
+
+        var kitsPoolString = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">Kits Pool</h1>'+
+            '<div id="bodyContent">'+
+            '<p>World-class pool with an unbeatable view.' +
+            '</p>'+
+            '</div>'+
+            '</div>';
+
+        var alibiRoomString = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">Alibi Room</h1>'+
+            '<div id="bodyContent">'+
+            '<p>Try out a beer from their huge selection in this eclectic space' +
+            '</p>'+
+            '</div>'+
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow();
+
+        var romerMarker = new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: romers,
+          title: "Romer's Burger Bar"
+        });
+        romerMarker.addListener('click', function(){
+          infowindow.setContent(romerString);
+          infowindow.open(map, romerMarker);
+        });
+        
+        var lighthouseLabsMarker = new google.maps.Marker({
+          map: map,
+          title: 'Lighthouse Labs',
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: lighthouseLabs
+        });
+        lighthouseLabsMarker.addListener('click', function(){
+          infowindow.setContent(lighthouseString);
+          infowindow.open(map, lighthouseLabsMarker);
+        });
+
+        var kitsPoolMarker = new google.maps.Marker({
+          map: map,
+          title: 'Kits Pool',
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: kitsPool
+        });
+        kitsPoolMarker.addListener('click', function(){
+          infowindow.setContent(kitsPoolString);
+          infowindow.open(map, kitsPoolMarker);
+        });
+      
+        var alibiRoomMarker = new google.maps.Marker({
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: alibiRoom,
+          title: 'Alibi Room'
+        }); 
+        alibiRoomMarker.addListener('click', function(){
+          infowindow.setContent(alibiRoomString);
+          infowindow.open(map, alibiRoomMarker);
+        });
+      
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    </script>
+  </body>
+</html>
+

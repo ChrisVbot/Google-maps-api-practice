@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>My fave places</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 49.268, lng: -123.148}
+        });
+
+        var markers = [
+          ['Romers Burger Bar', 49.268,-123.148],
+          ['Lighthouse Labs', 49.282,-123.108],
+          ['Kits Pool', 49.273,-123.158],
+          ['Alibi Room', 49.284,-123.102]
+        ];
+
+        //TODO: JSONIFY! 
+        //TODO: Databasify?
+        //TODO: Users can add pins
+
+        var infoWindowContent = [
+          ['<div id="content">'+
+              '<h1 id="firstHeading" class="firstHeading">Romer\'s Burger Bar</h1>'+
+              '<div id="bodyContent">'+
+              '<p>Always a great place for a burg and a beer!' +
+              '</p>'+
+              '</div>'+
+              '</div>'],
+          ['<div id="content">'+
+              '<h1 id="firstHeading" class="firstHeading">Lighthouse Labs</h1>'+
+              '<div id="bodyContent">'+
+              '<p>I spend a lot of time here!' +
+              '</p>'+
+              '</div>'+
+              '</div>'],
+          ['<div id="content">'+
+              '<h1 id="firstHeading" class="firstHeading">Kits Pool</h1>'+
+              '<div id="bodyContent">'+
+              '<p>World-class pool with an unbeatable view.' +
+              '</p>'+
+              '</div>'+
+              '</div>'],
+          ['<div id="content">'+
+              '<h1 id="firstHeading" class="firstHeading">Alibi Room</h1>'+
+              '<div id="bodyContent">'+
+              '<p>Try out a beer from their huge selection in this eclectic space' +
+              '</p>'+
+              '</div>'+
+              '</div>']
+        ];
+
+        var infoWindow = new google.maps.InfoWindow();
+
+        markers.forEach(function(item, index){
+          var position = new google.maps.LatLng(markers[index][1], markers[index][2]);
+          var marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: markers[index][0]
+            })
+          google.maps.event.addListener(marker, 'click', (function(marker){
+            return function(){
+              //e.g. infowindowContent[0]th position, [0]th content 
+              infoWindow.setContent(infoWindowContent[index][0]);
+              infoWindow.open(map, marker);
+            }
+          })(marker)); 
+        });
+      
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    </script>
+  </body>
+</html>
