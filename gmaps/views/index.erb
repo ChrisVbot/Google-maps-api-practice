@@ -6,49 +6,68 @@
     <title>My fave places</title>
     <style>
       html, body {
-        height: 100%;
+        height: 99%;
         margin: 0;
         padding: 0;
       }
       #map {
-        height: 100%;
+        height: 98%;
       }
     </style>
   </head>
   <body>
+
     <div id="map"></div>
+    <button class="clear">Delete all my pins</button>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
     <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
     <script>
 
-      var apiKey = $.ajax({
+      var apiKey = []
+
+      $.ajax({
           method: 'get',
           url: '/api-key',
           success: function(){
-            console.log(apiKey)
+            console.log('Retrieved API key')
+            $.ajax({
+              method:'get',
+              url:"https://maps.googleapis.com/maps/api/js?",
+              data:{
+                key: apiKey,
+                callback: 'initMap'
+              },
+              dataType: 'jsonp'
+              });
           }, 
           error: function(){
             console.log('failed to get api key');
           }
         });
-
+      
+      var mar = JSON.parse(localStorage.getItem('user markers')) || [];
+      var userMarkers = mar.userMarkers || [];
+      console.log(userMarkers);
+      
+      $(".clear").on('click', function(){
+        window.localStorage.clear();
+          $.ajax({
+            method:'get',
+            url:"https://maps.googleapis.com/maps/api/js?",
+            data:{
+              key: apiKey,
+              callback: 'initMap'
+            },
+            dataType: 'jsonp'
+          });
+      });
+      
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 13,
           center: {lat: 49.268, lng: -123.148}
         });
-
-        // $.ajax({
-        //   method: 'get',
-        //   url: '/api-key',
-        //   success: function(apiKey){
-        //     console.log(apiKey)
-        //   }, 
-        //   error: function(){
-        //     console.log('failed to get api key');
-        //   }
-        // });
 
         var markers = [
           ['Romers Burger Bar', 49.268,-123.148],
@@ -56,10 +75,6 @@
           ['Kits Pool', 49.273,-123.158],
           ['Alibi Room', 49.284,-123.102]
         ];
-
-        //TODO: JSONIFY! 
-        //TODO: Databasify?
-        //TODO: Users can add pins
 
         var infoWindowContent = [
           ['<div id="content">'+
@@ -97,20 +112,55 @@
             position: event.latLng, 
             map: map});
           var point = marker.getPosition();
+          var newMarker = {
+            "lat": point.lat(),
+            "lng": point.lng(),
+            title: "Title of marker",
+            content: "Content of marker"
+          };
+          // console.log(newMarker);
+          userMarkers.push(newMarker);
+          // localStorage.setItem("user markers", JSON.stringify({userMarkers}))
+          console.log(userMarkers)
+
           var infowindow = new google.maps.InfoWindow({
-            content: 'Latitude: ' + point.lat() + '<br>Longitude: ' + point.lng()
+            title: newMarker.title,
+            content: newMarker.content
           });
           infowindow.open(map, marker);
-          localStorage.setItem("lat",point.lat());
-          localStorage.setItem("lng",point.lng());
+          console.log(userMarkers);
+         localStorage.setItem("user markers", JSON.stringify({userMarkers}))
+  
         }));
 
-
-        userMarker();
-
         var infoWindow = new google.maps.InfoWindow();
+        
+        displayNewUserMarker();
 
-        function userMarker(){
+        displayUserMarkers();
+
+        function displayUserMarkers(){
+          m = JSON.parse(localStorage.getItem('user markers'));
+          if (m !== null){
+            m.userMarkers.forEach(function(item, index){
+              var position = new google.maps.LatLng(m.userMarkers[index].lat, m.userMarkers[index].lng);
+              var marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: m.userMarkers[index].title,
+                content: m.userMarkers[index].content
+                });
+              google.maps.event.addListener(marker, 'click', (function(marker){
+                return function(){
+                  infoWindow.setContent('<h1>' + marker.title + '</h1>' + marker.content);
+                  infoWindow.open(map, marker);
+                }
+              })(marker));
+              });
+          }
+        };
+
+        function displayNewUserMarker(){
           myLat  = localStorage.getItem("lat"); 
           myLng  = localStorage.getItem("lng");
           var position = new google.maps.LatLng(myLat, myLng);
@@ -119,8 +169,7 @@
           map: map,
           title: "User marker"
           });
-      };
-
+        };
 
         markers.forEach(function(item, index){
           var position = new google.maps.LatLng(markers[index][1], markers[index][2]);
@@ -131,7 +180,6 @@
             })
           google.maps.event.addListener(marker, 'click', (function(marker){
             return function(){
-              //e.g. infowindowContent[0]th position, [0]th content 
               infoWindow.setContent(infoWindowContent[index][0]);
               infoWindow.open(map, marker);
             }
@@ -140,7 +188,7 @@
       
       }
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"> -->
     </script>
   </body>
 </html>
